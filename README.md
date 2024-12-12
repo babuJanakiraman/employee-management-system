@@ -346,6 +346,10 @@ docker run -p 8200:8200 employee-database
 2. Run `mvn test` to execute the unit tests.
 3. Run `mvn verify` to execute the integration tests.
 
+## Additional Notes
+1. **Stored** **Procedure** : I have tried to implement the Stored Procedure for delete role, but it is not working as expected. Seems like the issue is with the H2 database. its not supporting the stored procedure with sql script.So I have implemented the delete role with prepared statement.
+2. **Retry** : Due to time constraint, I have implemented the retry mechanism with Resilience4j only. I have not implemented in a way it's said in the requirement(with storing retryCount in repo and scheduler).
+
 
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for details.
