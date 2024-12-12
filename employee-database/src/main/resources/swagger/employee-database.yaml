@@ -1,0 +1,274 @@
+openapi: 3.0.3
+info:
+  title: Employee Database API
+  description: API documentation for Employee Database
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:8200'
+paths:
+  /api/employees:
+    post:
+      tags:
+        - EmployeeDatabase
+      operationId: createEmployee
+      security:
+        - basicAuth: []
+      summary: Create a new employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+      responses:
+        '200':
+          description: Employee created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+        '400':
+          description: Invalid input
+    get:
+      tags:
+        - EmployeeDatabase
+      operationId: getAllEmployees
+      security:
+        - basicAuth: []
+      summary: Get all employees
+      responses:
+        '200':
+          description: List of all employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeResponse'
+        '400':
+          description: Invalid input
+  /api/employees/{id}:
+    get:
+      tags:
+        - EmployeeDatabase
+      operationId: getEmployeeById
+      security:
+        - basicAuth: []
+      summary: Get employee details by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Employee found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+        '400':
+          description: Invalid input
+        '404':
+          description: Employee not found
+    put:
+      tags:
+        - EmployeeDatabase
+      operationId: updateEmployee
+      security:
+        - basicAuth: []
+      summary: Update employee details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+      responses:
+        '200':
+          description: Employee updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+        '400':
+          description: Invalid input
+        '404':
+          description: Employee not found
+    delete:
+      tags:
+        - EmployeeDatabase
+      operationId: deleteEmployee
+      security:
+        - basicAuth: []
+      summary: Delete an employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Employee deleted successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Employee deleted successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Employee not found
+  /api/roles/{id}:
+    delete:
+      tags:
+        - Role
+      operationId: deleteRole
+      summary: Delete a role
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Role deleted successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Role deleted successfully
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/{employeeId}/projects/{projectId}:
+    put:
+      tags:
+        - Project
+      operationId: assignProjectToEmployee
+      summary: Assign a project to an employee
+      security:
+        - basicAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Project assigned to employee successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Project assigned to employee successfully
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee or Project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    EmployeeRequest:
+      type: object
+      required:
+        - name
+        - role_id
+      properties:
+        name:
+          type: string
+        role_id:
+          type: integer
+          format: int64
+    EmployeeResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        role_id:
+          type: integer
+          format: int64
+        project_ids:
+          type: array
+          items:
+            type: integer
+            format: int64
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        detailedMessage:
+          type: string

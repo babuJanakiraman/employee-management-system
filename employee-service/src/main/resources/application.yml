@@ -1,0 +1,61 @@
+server:
+    port: 8100
+
+spring:
+    application:
+        name: employee-service
+    security:
+        user:
+            name: user
+            password: userpass
+
+management:
+    endpoint:
+        health:
+            show-details: always
+    endpoints:
+        web:
+            exposure:
+                include: health
+    health:
+        circuitbreakers:
+            enabled: true
+
+springdoc:
+    api-docs:
+        path: /v3/api-docs
+    swagger-ui:
+        path: /swagger-ui.html
+
+employeeDatabaseService:
+    connectionTimeoutInMillis: 300
+    keepAliveStrategy: 5000
+    maxHttpPoolSize: 20
+    readTimeoutInMillis: 3000
+#    uncomment the next line and comment the line after that while running the application in docker
+#    url: http://employee-database:8200
+    url: http://localhost:8200
+    username: user
+    password: userpass
+
+resilience4j:
+    circuitbreaker:
+        instances:
+            employee-database-service:
+                failure-rate-threshold: 50
+                max-wait-duration-in-half-open-state: 3000
+                minimumNumberOfCalls: 10
+                permitted-number-of-calls-in-half-open-state: 4
+                register-health-indicator: true
+                sliding-window-size: 10
+                sliding-window-type: COUNT_BASED
+                wait-duration-in-open-state: 5000
+    retry:
+        instances:
+            employee-database:
+                max-attempts: 3
+                wait-duration: 1s
+                retry-exceptions:
+                    - org.springframework.web.client.HttpServerErrorException
+
+
