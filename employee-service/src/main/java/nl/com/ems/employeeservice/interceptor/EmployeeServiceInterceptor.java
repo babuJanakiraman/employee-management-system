@@ -23,6 +23,9 @@ public class EmployeeServiceInterceptor implements HandlerInterceptor {
         }
 
         String role = request.getHeader("Role");
+        if (role != null && !role.isEmpty()) {
+            role = role.toUpperCase();
+        }
         String requestURI = request.getRequestURI();
         log.info("Request URI: {}", requestURI);
 
