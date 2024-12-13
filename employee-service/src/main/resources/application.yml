@@ -41,7 +41,7 @@ employeeDatabaseService:
 resilience4j:
     circuitbreaker:
         instances:
-            employee-database-service:
+            employee-database:
                 failure-rate-threshold: 50
                 max-wait-duration-in-half-open-state: 3000
                 minimumNumberOfCalls: 10
